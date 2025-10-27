@@ -1,6 +1,6 @@
 # Guia de Deploy no Render
 
-## Problemas Corrigidos
+## ✅ Problemas Corrigidos na Última Atualização
 
 ### ✅ 1. API URL Configuration
 - O frontend agora usa `REACT_APP_API_URL` para determinar a URL da API
@@ -16,6 +16,15 @@
 
 ### ✅ 4. Manifest Icons
 - Corrigido o tipo de arquivo dos ícones no manifest.json
+
+### ✅ 5. API URL Auto-Detection
+- Frontend agora detecta automaticamente a URL da API em produção
+- Não é mais necessário configurar `REACT_APP_API_URL` manualmente no Render
+- Funciona automaticamente com URLs do Render (.onrender.com)
+
+### ✅ 6. Service Worker
+- Service Worker desabilitado temporariamente
+- Evita conflitos com requisições de API
 
 ---
 
@@ -35,13 +44,14 @@ NODE_ENV=production
 PORT=3000
 ```
 
-#### Importantes para Produção:
+#### Opcionais (mas recomendadas para melhor controle):
 ```env
 REACT_APP_API_URL=https://horasextras.onrender.com
 FRONTEND_URL=https://horasextras.onrender.com
 ```
 
-> **⚠️ IMPORTANTE**: Substitua `horasextras.onrender.com` pela URL real do seu serviço no Render!
+> **⚠️ IMPORTANTE**: Substitua `horasextras.onrender.com` pela URL real do seu serviço no Render!  
+> **✅ NOTA**: Se não configurar essas variáveis, o sistema detectará automaticamente a URL do Render.
 
 ---
 

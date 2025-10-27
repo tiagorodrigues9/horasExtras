@@ -34,8 +34,10 @@ root.render(
   </React.StrictMode>
 );
 
-// Registrar Service Worker para PWA
-if ('serviceWorker' in navigator) {
+// Service Worker desabilitado temporariamente por causa de conflitos
+// Comentar para reativar após resolver os problemas de CORS/API
+/*
+if ('serviceWorker' in navigator && process.env.NODE_ENV === 'production') {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/service-worker.js')
       .then((registration) => {
@@ -46,3 +48,4 @@ if ('serviceWorker' in navigator) {
       });
   });
 }
+*/
