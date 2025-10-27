@@ -1,28 +1,26 @@
 import Cliente from "../models/Cliente.js";
 
-// Listar todos os clientes, ordenados por nome
-export const listarClientes = async () => {
-  const clientes = await Cliente.find().sort({ nome: 1 });
-  return clientes;
+// Listar clientes do usuário logado
+export const listarClientes = async (usuarioId) => {
+  return await Cliente.find({ dono: usuarioId }).sort({ nome: 1 });
 };
 
-// Criar um novo cliente
-export const criarCliente = async ({ nome, endereco, cnpj }) => {
+// Criar cliente associado ao usuário logado
+export const criarCliente = async ({ nome, endereco, cnpj }, usuarioId) => {
   if (!nome || !cnpj) throw new Error("Nome e CNPJ são obrigatórios");
 
-  const clienteExistente = await Cliente.findOne({ cnpj });
-  if (clienteExistente) throw new Error("Cliente já cadastrado");
+  // Verifica se o cliente já existe para esse usuário
+  const clienteExistente = await Cliente.findOne({ cnpj, dono: usuarioId });
+  if (clienteExistente) throw new Error("Cliente já cadastrado por você");
 
-  const cliente = await Cliente.create({ nome, endereco, cnpj });
+  const cliente = await Cliente.create({ nome, endereco, cnpj, dono: usuarioId });
   return cliente;
 };
 
-// Atualizar cliente existente
-export const atualizarCliente = async (id, { nome, endereco, cnpj }) => {
-  if (!id) throw new Error("ID do cliente é obrigatório");
-
-  const cliente = await Cliente.findById(id);
-  if (!cliente) throw new Error("Cliente não encontrado");
+// Atualizar cliente, garantindo que pertence ao usuário logado
+export const atualizarCliente = async (id, usuarioId, { nome, endereco, cnpj }) => {
+  const cliente = await Cliente.findOne({ _id: id, dono: usuarioId });
+  if (!cliente) throw new Error("Cliente não encontrado ou você não tem permissão");
 
   if (nome) cliente.nome = nome;
   if (endereco) cliente.endereco = endereco;

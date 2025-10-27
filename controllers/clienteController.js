@@ -1,9 +1,9 @@
 import * as clienteService from "../services/clienteService.js";
 
-// Listar todos os clientes
+// Listar clientes do usuário logado
 export const listarClientes = async (req, res) => {
   try {
-    const clientes = await clienteService.listarClientes();
+    const clientes = await clienteService.listarClientes(req.user.id);
     res.json(clientes);
   } catch (err) {
     console.error(err);
@@ -20,7 +20,7 @@ export const criarCliente = async (req, res) => {
       return res.status(400).json({ error: "Nome e CNPJ são obrigatórios" });
     }
 
-    const cliente = await clienteService.criarCliente({ nome, endereco, cnpj });
+    const cliente = await clienteService.criarCliente({ nome, endereco, cnpj }, req.user.id);
     res.status(201).json(cliente);
   } catch (err) {
     console.error(err);
@@ -36,7 +36,7 @@ export const atualizarCliente = async (req, res) => {
 
     if (!id) return res.status(400).json({ error: "ID do cliente é obrigatório" });
 
-    const cliente = await clienteService.atualizarCliente(id, { nome, endereco, cnpj });
+    const cliente = await clienteService.atualizarCliente(id, req.user.id, { nome, endereco, cnpj });
     res.json(cliente);
   } catch (err) {
     console.error(err);
