@@ -123,7 +123,7 @@ export const Clientes: React.FC = () => {
           variant="contained"
           startIcon={<Add />}
           onClick={() => handleOpenDialog()}
-          fullWidth={{ xs: true, sm: false }}
+          sx={{ width: { xs: '100%', sm: 'auto' } }}
         >
           Novo Cliente
         </Button>
