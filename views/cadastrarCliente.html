@@ -71,9 +71,19 @@
       const cnpj = document.getElementById("cnpj").value.trim();
 
       try {
+        const token = localStorage.getItem("token");
+        if (!token) {
+          mensagemEl.textContent = "❌ Faça login para cadastrar clientes";
+          mensagemEl.style.color = "red";
+          return;
+        }
+
         const res = await fetch("/clientes", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: { 
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+          },
           body: JSON.stringify({ nome, endereco, cnpj })
         });
 
