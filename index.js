@@ -73,25 +73,30 @@ if (process.env.NODE_ENV === "production") {
   app.use(express.static(path.join(__dirname, "public")));
 }
 
-// Rotas de API
-app.use("/auth", authRoutes);
-app.use("/clientes", clienteRoutes);
-app.use("/atendimentos", atendimentoRoutes);
-app.use("/usuarios", usuarioRoutes);
+// Rotas de API - prefijo /api para evitar conflito com rotas SPA
+app.use("/api/auth", authRoutes);
+app.use("/api/clientes", clienteRoutes);
+app.use("/api/atendimentos", atendimentoRoutes);
+app.use("/api/usuarios", usuarioRoutes);
 
 // Em produção, servir o React app para todas as rotas não-API
 if (process.env.NODE_ENV === "production") {
-  // Rota catch-all deve ser a última
-  app.get('*', (req, res) => {
-    // Não servir index.html para rotas de API
-    if (req.path.startsWith('/auth/') || 
-        req.path.startsWith('/clientes/') || 
-        req.path.startsWith('/atendimentos/') || 
-        req.path.startsWith('/usuarios/')) {
-      return res.status(404).json({ error: 'Rota não encontrada' });
-    }
-    
+  // Função para servir index.html
+  const serveIndex = (req, res) => {
     res.sendFile(path.join(__dirname, "frontend/build", "index.html"));
+  };
+  
+  // Serve index.html para rotas específicas da SPA
+  app.get('/', serveIndex);
+  app.get('/login', serveIndex);
+  app.get('/register', serveIndex);
+  app.get('/dashboard', serveIndex);
+  app.get('/clientes', serveIndex);
+  app.get('/perfil', serveIndex);
+  
+  // Catch-all - serve index.html para qualquer outro GET request
+  app.use((req, res) => {
+    serveIndex(req, res);
   });
 } else {
   // Em desenvolvimento, manter rotas HTML antigas

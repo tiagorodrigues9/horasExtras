@@ -4,16 +4,16 @@ import axios from 'axios';
 const getApiUrl = () => {
   // Em produção no Render, usar a mesma URL do host
   if (window.location.hostname.includes('onrender.com')) {
-    return window.location.origin;
+    return window.location.origin + '/api';
   }
   
   // Se REACT_APP_API_URL está definido, usar
   if (process.env.REACT_APP_API_URL) {
-    return process.env.REACT_APP_API_URL;
+    return process.env.REACT_APP_API_URL + '/api';
   }
   
   // Default para desenvolvimento
-  return 'http://localhost:3000';
+  return 'http://localhost:3000/api';
 };
 
 const API_URL = getApiUrl();
