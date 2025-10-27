@@ -15,7 +15,12 @@ import {
   ListItemText,
   ListItemSecondaryAction,
   Chip,
-  Alert
+  Alert,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  CircularProgress
 } from '@mui/material';
 import { api } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
@@ -40,12 +45,26 @@ export const Home: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [openDialog, setOpenDialog] = useState(false);
+  const [atendimentoParaFinalizar, setAtendimentoParaFinalizar] = useState<string | null>(null);
+  const [observacao, setObservacao] = useState('');
+  const [currentTime, setCurrentTime] = useState(Date.now());
   const { user } = useAuth();
 
   useEffect(() => {
     carregarClientes();
     carregarAtendimentos();
   }, []);
+
+  // Atualizar cronômetro a cada segundo
+  useEffect(() => {
+    if (atendimentos.length > 0) {
+      const interval = setInterval(() => {
+        setCurrentTime(Date.now());
+      }, 1000);
+      return () => clearInterval(interval);
+    }
+  }, [atendimentos]);
 
   const carregarClientes = async () => {
     try {
@@ -86,16 +105,31 @@ export const Home: React.FC = () => {
     }
   };
 
-  const finalizarAtendimento = async (atendimentoId: string) => {
+  const abrirDialogFinalizacao = (atendimentoId: string) => {
+    setAtendimentoParaFinalizar(atendimentoId);
+    setObservacao('');
+    setOpenDialog(true);
+  };
+
+  const fecharDialogFinalizacao = () => {
+    setOpenDialog(false);
+    setAtendimentoParaFinalizar(null);
+    setObservacao('');
+  };
+
+  const finalizarAtendimento = async () => {
+    if (!atendimentoParaFinalizar) return;
+
     setLoading(true);
     setError('');
 
     try {
-      await api.put(`/atendimentos/finalizar/${atendimentoId}`, {
-        observacao: ''
+      await api.put(`/atendimentos/finalizar/${atendimentoParaFinalizar}`, {
+        observacao: observacao
       });
       setSuccess('Atendimento finalizado com sucesso!');
       carregarAtendimentos();
+      fecharDialogFinalizacao();
     } catch (error: any) {
       setError(error.response?.data?.error || 'Erro ao finalizar atendimento');
     } finally {
@@ -104,9 +138,8 @@ export const Home: React.FC = () => {
   };
 
   const formatarTempo = (inicio: string) => {
-    const agora = new Date();
     const inicioDate = new Date(inicio);
-    const diff = agora.getTime() - inicioDate.getTime();
+    const diff = currentTime - inicioDate.getTime();
     
     const horas = Math.floor(diff / (1000 * 60 * 60));
     const minutos = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
@@ -202,7 +235,7 @@ export const Home: React.FC = () => {
                       variant="contained"
                       color="error"
                       size="small"
-                      onClick={() => finalizarAtendimento(atendimento._id)}
+                      onClick={() => abrirDialogFinalizacao(atendimento._id)}
                       disabled={loading}
                       fullWidth={false}
                     >
@@ -215,6 +248,38 @@ export const Home: React.FC = () => {
           )}
         </CardContent>
       </Card>
+
+      {/* Dialog de finalização */}
+      <Dialog open={openDialog} onClose={fecharDialogFinalizacao} maxWidth="sm" fullWidth>
+        <DialogTitle>Finalizar Atendimento</DialogTitle>
+        <DialogContent>
+          <TextField
+            autoFocus
+            margin="dense"
+            label="Observação"
+            fullWidth
+            multiline
+            rows={4}
+            variant="outlined"
+            value={observacao}
+            onChange={(e) => setObservacao(e.target.value)}
+            placeholder="Digite uma observação sobre o atendimento (opcional)"
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={fecharDialogFinalizacao} disabled={loading}>
+            Cancelar
+          </Button>
+          <Button 
+            onClick={finalizarAtendimento} 
+            variant="contained" 
+            color="error"
+            disabled={loading}
+          >
+            {loading ? <CircularProgress size={24} /> : 'Finalizar'}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };

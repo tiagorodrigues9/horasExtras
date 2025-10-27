@@ -101,29 +101,38 @@ export const Dashboard: React.FC = () => {
   const exportarParaExcel = () => {
     if (!estatisticas || !estatisticas.atendimentos) return;
 
-    // Criar CSV (que pode ser aberto no Excel)
-    let csv = 'Cliente,Início,Fim,Duração (HH:MM:SS),Observação\n';
+    // Criar CSV com formatação correta para Excel
+    // Use ponto e vírgula como separador para Excel brasileiro
+    let csv = 'Cliente;Início;Fim;Duração;Observação\n';
     
-    estatisticas.atendimentos.forEach((atendimento) => {
-      const inicio = new Date(atendimento.inicio).toLocaleString();
+    estatisticas.atendimentos.forEach((atendimento: any) => {
+      const cliente = atendimento.cliente?.nome || '-';
+      const inicio = new Date(atendimento.inicio).toLocaleString('pt-BR');
       const fim = atendimento.fim 
-        ? new Date(atendimento.fim).toLocaleString()
+        ? new Date(atendimento.fim).toLocaleString('pt-BR')
         : 'Em andamento';
       const duracao = atendimento.duracao 
         ? formatarHoras(atendimento.duracao)
         : '-';
-      const observacao = atendimento.observacao || '-';
+      const observacao = (atendimento.observacao || '-').replace(/"/g, '""'); // Escapar aspas
+      const usuario = atendimento.usuario?.nome || '-';
       
-      csv += `${atendimento.cliente.nome},"${inicio}","${fim}","${duracao}","${observacao}"\n`;
+      // Adicionar usuário se disponível
+      if (atendimento.usuario) {
+        csv += `${cliente};${inicio};${fim};${duracao};"${observacao}";${usuario}\n`;
+      } else {
+        csv += `${cliente};${inicio};${fim};${duracao};"${observacao}"\n`;
+      }
     });
 
     // Adicionar estatísticas
     csv += '\n---\n';
     csv += 'Estatísticas\n';
-    csv += `Total de Atendimentos,${estatisticas.totalAtendimentos}\n`;
-    csv += `Total de Horas,${formatarHoras(estatisticas.totalHoras)}\n`;
-    csv += `Média por Atendimento,${formatarHoras(estatisticas.mediaHoras)}\n`;
-    csv += `Cliente Mais Atendido,${estatisticas.clienteFrequente}\n`;
+    csv += `Total de Atendimentos;${estatisticas.totalAtendimentos}\n`;
+    csv += `Total de Horas;${formatarHoras(estatisticas.totalHoras)}\n`;
+    csv += `Média por Atendimento;${formatarHoras(estatisticas.mediaHoras)}\n`;
+    csv += `Cliente Mais Atendido;${estatisticas.clienteFrequente}\n`;
+    csv += `Período;${dataInicio} a ${dataFim}\n`;
 
     // Criar arquivo e fazer download
     const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' });
