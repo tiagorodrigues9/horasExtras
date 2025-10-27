@@ -1,16 +1,10 @@
-const CACHE_NAME = 'hora-extra-v2.0.0';
+// Service Worker para PWA
+const CACHE_NAME = 'hora-extra-v1.0.0';
 const urlsToCache = [
   '/',
-  '/login',
-  '/home',
-  '/cadastrar',
-  '/cadastrar-cliente',
-  '/perfil',
-  '/css/style.css',
-  '/js/main.js',
-  '/manifest.json',
-  '/icons/icon-192x192.png',
-  '/icons/icon-512x512.png'
+  '/static/js/bundle.js',
+  '/static/css/main.css',
+  '/manifest.json'
 ];
 
 // Instalação do Service Worker
@@ -54,11 +48,9 @@ self.addEventListener('fetch', (event) => {
     event.respondWith(
       fetch(event.request)
         .then((response) => {
-          // Se a requisição foi bem-sucedida, retorna a resposta
           return response;
         })
         .catch(() => {
-          // Se falhou, tenta buscar no cache
           return caches.match(event.request);
         })
     );
@@ -67,19 +59,15 @@ self.addEventListener('fetch', (event) => {
     event.respondWith(
       caches.match(event.request)
         .then((response) => {
-          // Se encontrou no cache, retorna
           if (response) {
             return response;
           }
           
-          // Se não encontrou, busca na rede
           return fetch(event.request).then((response) => {
-            // Verifica se a resposta é válida
             if (!response || response.status !== 200 || response.type !== 'basic') {
               return response;
             }
             
-            // Clona a resposta para o cache
             const responseToCache = response.clone();
             caches.open(CACHE_NAME)
               .then((cache) => {
@@ -93,12 +81,12 @@ self.addEventListener('fetch', (event) => {
   }
 });
 
-// Notificações push (opcional)
+// Notificações push
 self.addEventListener('push', (event) => {
   const options = {
     body: event.data ? event.data.text() : 'Nova notificação do Hora Extra',
-    icon: '/icons/icon-192x192.png',
-    badge: '/icons/icon-72x72.png',
+    icon: '/logo192.png',
+    badge: '/logo192.png',
     vibrate: [100, 50, 100],
     data: {
       dateOfArrival: Date.now(),
@@ -108,12 +96,12 @@ self.addEventListener('push', (event) => {
       {
         action: 'explore',
         title: 'Abrir App',
-        icon: '/icons/icon-192x192.png'
+        icon: '/logo192.png'
       },
       {
         action: 'close',
         title: 'Fechar',
-        icon: '/icons/icon-192x192.png'
+        icon: '/logo192.png'
       }
     ]
   };
@@ -129,17 +117,7 @@ self.addEventListener('notificationclick', (event) => {
   
   if (event.action === 'explore') {
     event.waitUntil(
-      clients.openWindow('/home')
-    );
-  }
-});
-
-// Sincronização em background (opcional)
-self.addEventListener('sync', (event) => {
-  if (event.tag === 'background-sync') {
-    event.waitUntil(
-      // Aqui você pode implementar sincronização de dados offline
-      console.log('Sincronização em background executada')
+      clients.openWindow('/')
     );
   }
 });

@@ -1,16 +1,16 @@
 # 🕐 Hora Extra - Sistema de Gestão de Atendimentos
 
-Sistema completo para gestão de horas extras e atendimentos, desenvolvido com Node.js, Express e MongoDB.
+Sistema completo para gestão de horas extras e atendimentos, desenvolvido com **Node.js/Express** (backend) e **React/TypeScript** (frontend).
 
 ## ✨ Funcionalidades
 
 - 🔐 **Autenticação segura** com JWT
 - 👥 **Gestão de clientes** com validação de CNPJ
 - ⏱️ **Controle de atendimentos** em tempo real
-- 📊 **Dashboard com estatísticas** e gráficos
+- 📊 **Dashboard com estatísticas** e gráficos interativos
 - 📱 **PWA** (Progressive Web App) para uso offline
 - 📈 **Relatórios exportáveis** (Excel, JSON)
-- 🎨 **Interface responsiva** e moderna
+- 🎨 **Interface moderna** com Material-UI
 
 ## 🚀 Instalação
 
@@ -27,13 +27,7 @@ git clone <url-do-repositorio>
 cd horasExtras
 ```
 
-### 2. Instale as dependências
-
-```bash
-npm install
-```
-
-### 3. Configure as variáveis de ambiente
+### 2. Configure as variáveis de ambiente
 
 Crie um arquivo `.env` na raiz do projeto:
 
@@ -51,15 +45,23 @@ PORT=3000
 NODE_ENV=development
 ```
 
-### 4. Execute o projeto
+### 3. Execute o projeto
 
 ```bash
-# Desenvolvimento
-npm run dev
+# Terminal 1 - Backend
+npm install
+npm start
 
-# Produção
+# Terminal 2 - Frontend React
+cd frontend
+npm install
 npm start
 ```
+
+### 4. Acessar o sistema
+
+- **Frontend React**: http://localhost:3001
+- **Backend API**: http://localhost:3000
 
 ## 🔧 Configuração do MongoDB
 
