@@ -17,6 +17,7 @@ import {
   Alert,
   CircularProgress
 } from '@mui/material';
+import DownloadIcon from '@mui/icons-material/Download';
 import {
   LineChart,
   Line,
@@ -95,6 +96,45 @@ export const Dashboard: React.FC = () => {
     const minutos = Math.floor((segundos % 3600) / 60);
     const segundosRestantes = segundos % 60;
     return `${String(horas).padStart(2, '0')}:${String(minutos).padStart(2, '0')}:${String(segundosRestantes).padStart(2, '0')}`;
+  };
+
+  const exportarParaExcel = () => {
+    if (!estatisticas || !estatisticas.atendimentos) return;
+
+    // Criar CSV (que pode ser aberto no Excel)
+    let csv = 'Cliente,Início,Fim,Duração (HH:MM:SS),Observação\n';
+    
+    estatisticas.atendimentos.forEach((atendimento) => {
+      const inicio = new Date(atendimento.inicio).toLocaleString();
+      const fim = atendimento.fim 
+        ? new Date(atendimento.fim).toLocaleString()
+        : 'Em andamento';
+      const duracao = atendimento.duracao 
+        ? formatarHoras(atendimento.duracao)
+        : '-';
+      const observacao = atendimento.observacao || '-';
+      
+      csv += `${atendimento.cliente.nome},"${inicio}","${fim}","${duracao}","${observacao}"\n`;
+    });
+
+    // Adicionar estatísticas
+    csv += '\n---\n';
+    csv += 'Estatísticas\n';
+    csv += `Total de Atendimentos,${estatisticas.totalAtendimentos}\n`;
+    csv += `Total de Horas,${formatarHoras(estatisticas.totalHoras)}\n`;
+    csv += `Média por Atendimento,${formatarHoras(estatisticas.mediaHoras)}\n`;
+    csv += `Cliente Mais Atendido,${estatisticas.clienteFrequente}\n`;
+
+    // Criar arquivo e fazer download
+    const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    link.setAttribute('href', url);
+    link.setAttribute('download', `relatorio_atendimentos_${dataInicio}_${dataFim}.csv`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   if (loading) {
@@ -236,9 +276,19 @@ export const Dashboard: React.FC = () => {
           {/* Lista de Atendimentos */}
           <Card>
             <CardContent>
-              <Typography variant="h6" gutterBottom>
-                Últimos Atendimentos
-              </Typography>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                <Typography variant="h6">
+                  Últimos Atendimentos
+                </Typography>
+                <Button
+                  variant="outlined"
+                  startIcon={<DownloadIcon />}
+                  onClick={exportarParaExcel}
+                  size="small"
+                >
+                  Exportar Excel
+                </Button>
+              </Box>
               
               <TableContainer component={Paper}>
                 <Table>

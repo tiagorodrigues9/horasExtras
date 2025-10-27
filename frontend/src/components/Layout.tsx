@@ -128,20 +128,6 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
           
           {!isMobile && (
             <>
-              {menuItems.map((item) => (
-                <Button
-                  key={item.path}
-                  color="inherit"
-                  onClick={() => navigate(item.path)}
-                  sx={{
-                    backgroundColor: isActive(item.path) ? 'rgba(255,255,255,0.1)' : 'transparent',
-                    mr: 1
-                  }}
-                >
-                  {item.text}
-                </Button>
-              ))}
-              
               <Typography variant="body2" sx={{ mr: 2 }}>
                 Olá, {user?.nome}
               </Typography>
