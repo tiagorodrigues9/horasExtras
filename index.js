@@ -30,7 +30,7 @@ app.use("/clientes", clienteRoutes);
 app.use("/atendimentos", atendimentoRoutes);
 
 // Rotas de front-end (HTML)
-app.get("/", (req, res) => res.sendFile(path.join(__dirname, "views", "splash.html")));
+app.get("/", (req, res) => res.sendFile(path.join(__dirname, "views", "login.html")));
 app.get("/login", (req, res) => res.sendFile(path.join(__dirname, "views", "login.html")));
 app.get("/cadastrar", (req, res) => res.sendFile(path.join(__dirname, "views", "cadastrarUsuario.html")));
 app.get("/home", (req, res) => res.sendFile(path.join(__dirname, "views", "home.html")));

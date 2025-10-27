@@ -167,7 +167,7 @@
   <!-- Splash Screen -->
   <div class="splash-screen" id="splashScreen">
     <div class="logo-container">
-      <div class="logo">⏰ Hora Extra</div>
+      <div class="logo">Hora Extra</div>
       <div class="subtitle">SISTEMA DE GESTÃO</div>
     </div>
 
@@ -209,10 +209,8 @@
       });
     }
 
-    // Aguarda 3 segundos e redireciona para o login
-    setTimeout(() => {
-      window.location.href = '/login';
-    }, 3000);
+    // Redireciona imediatamente para o login
+    window.location.href = '/login';
 
     // Adiciona efeito de digitação no texto de carregamento
     const loadingTexts = [
