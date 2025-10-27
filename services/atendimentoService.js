@@ -53,7 +53,7 @@ export const listarAtendimentos = async (usuarioId) => {
 export const listarEstatisticas = async (usuarioId, { inicio, fim }) => {
   if (!usuarioId) throw new Error("Usuário não informado");
   
-  console.log("🔍 Buscando atendimentos para usuário:", usuarioId);
+  console.log("Buscando atendimentos para usuário:", usuarioId);
   
   // Construir query com filtro de datas
   const query = { 
@@ -74,7 +74,7 @@ export const listarEstatisticas = async (usuarioId, { inicio, fim }) => {
     .sort({ inicio: -1 })
     .limit(50); // Limitar últimos 50 para performance
   
-  console.log("📊 Atendimentos encontrados:", atendimentos.length);
+  console.log("Atendimentos encontrados:", atendimentos.length);
   
   // Calcular estatísticas
   const totalAtendimentos = atendimentos.length;

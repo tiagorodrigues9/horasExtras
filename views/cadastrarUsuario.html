@@ -64,19 +64,19 @@
         const data = await res.json();
 
         if (res.ok) {
-          mensagemEl.textContent = "✅ Usuário cadastrado com sucesso!";
+          mensagemEl.textContent = "Usuário cadastrado com sucesso!";
           mensagemEl.style.color = "green";
           cadastroForm.reset();
           setTimeout(() => {
             window.location.href = "/login";
           }, 1500);
         } else {
-          mensagemEl.textContent = "❌ " + (data.error || "Erro ao cadastrar usuário");
+          mensagemEl.textContent = data.error || "Erro ao cadastrar usuário";
           mensagemEl.style.color = "red";
         }
       } catch (err) {
         console.error(err);
-        mensagemEl.textContent = "❌ Erro de conexão com o servidor";
+        mensagemEl.textContent = "Erro de conexão com o servidor";
         mensagemEl.style.color = "red";
       }
     });

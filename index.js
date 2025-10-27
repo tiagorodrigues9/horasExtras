@@ -10,6 +10,7 @@ import authRoutes from "./routes/authRoutes.js";
 import clienteRoutes from "./routes/clienteRoutes.js"; 
 import usuarioRoutes from "./routes/usuariosRoutes.js";
 import atendimentoRoutes from "./routes/atendimentoRoutes.js";
+import { errorHandler, notFound } from "./middleware/errorHandler.js";
 
 // Config __dirname no ES Modules
 const __filename = fileURLToPath(import.meta.url);
@@ -39,8 +40,12 @@ app.get("/cadastrar-cliente", (req, res) => res.sendFile(path.join(__dirname, "v
 app.get("/perfil", (req, res) => res.sendFile(path.join(__dirname, "views", "perfil.html")));
 app.use("/usuarios", usuarioRoutes);
 
+// Middleware de tratamento de erro (deve vir por último)
+app.use(notFound);
+app.use(errorHandler);
+
 // Iniciar servidor
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`✅ Servidor rodando na porta ${PORT}. Acesse http://localhost:${PORT}`);
+  console.log(`Servidor rodando na porta ${PORT}. Acesse http://localhost:${PORT}`);
 });

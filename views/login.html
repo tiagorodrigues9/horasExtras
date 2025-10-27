@@ -15,7 +15,7 @@
 </head>
 <body>
   <div class="container login-container">
-    <h1>🚀 Hora Extra</h1>
+    <h1>Hora Extra</h1>
     <p style="text-align: center; color: #64748b; margin-bottom: 30px;">Faça login para acessar sua conta</p>
 
     <form id="loginForm">
@@ -61,12 +61,12 @@
           localStorage.setItem("token", data.token);
           window.location.href = "/home";
         } else {
-          mensagemEl.textContent = "❌ " + (data.error || "Erro ao fazer login");
+          mensagemEl.textContent = data.error || "Erro ao fazer login";
           mensagemEl.style.color = "red";
         }
       } catch (err) {
         console.error(err);
-        mensagemEl.textContent = "❌ Erro de conexão com o servidor";
+        mensagemEl.textContent = "Erro de conexão com o servidor";
         mensagemEl.style.color = "red";
       }
     });

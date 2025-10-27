@@ -23,12 +23,12 @@ if (loginForm) {
         localStorage.setItem("token", data.token);
         window.location.href = "/home";
       } else {
-        mensagemEl.textContent = "❌ " + (data.error || "Erro ao fazer login");
+        mensagemEl.textContent = data.error || "Erro ao fazer login";
         mensagemEl.style.color = "red";
       }
     } catch (err) {
       console.error(err);
-      mensagemEl.textContent = "❌ Erro de conexão com o servidor";
+      mensagemEl.textContent = "Erro de conexão com o servidor";
       mensagemEl.style.color = "red";
     }
   });
@@ -50,7 +50,7 @@ if (cadastroForm) {
       const data = await res.json();
 
       if (res.ok) {
-        mensagemEl.textContent = "✅ Usuário cadastrado com sucesso!";
+        mensagemEl.textContent = "Usuário cadastrado com sucesso!";
         mensagemEl.style.color = "green";
         cadastroForm.reset();
         setTimeout(() => window.location.href = "/login", 1500);
@@ -109,7 +109,7 @@ if (clienteForm) {
     try {
       const token = localStorage.getItem("token");
       if (!token) {
-        mensagemEl.textContent = "❌ Faça login para cadastrar clientes";
+        mensagemEl.textContent = "Faça login para cadastrar clientes";
         mensagemEl.style.color = "red";
         return;
       }
@@ -126,7 +126,7 @@ if (clienteForm) {
       const data = await res.json();
 
       if (res.ok) {
-        mensagemEl.textContent = "✅ Cliente cadastrado com sucesso!";
+        mensagemEl.textContent = "Cliente cadastrado com sucesso!";
         mensagemEl.style.color = "green";
         clienteForm.reset();
 
@@ -223,7 +223,7 @@ if (startBtn && stopBtn) {
       const data = await res.json();
 
       if (res.ok) {
-        alert("✅ Atendimento salvo com sucesso!");
+        alert("Atendimento salvo com sucesso!");
         timerDisplay.textContent = "00:00:00";
         observacao.value = "";
       } else {
@@ -286,7 +286,7 @@ if (perfilForm) {
       const data = await res.json();
 
       if (res.ok) {
-        mensagemEl.textContent = "✅ Perfil atualizado com sucesso!";
+        mensagemEl.textContent = "Perfil atualizado com sucesso!";
         mensagemEl.style.color = "green";
       } else {
         mensagemEl.textContent = data.error || "Erro ao atualizar perfil";

@@ -92,13 +92,13 @@
 <body>
   <div class="container">
     <nav class="menu">
-      <a href="/home">🏠 Home</a>
+      <a href="/home">Home</a>
       <a href="/cadastrar-cliente">Cadastrar Cliente</a>
       <a href="/perfil">Perfil</a>
       <a href="#" id="logout">Sair</a>
     </nav>
 
-    <h1>📊 Dashboard</h1>
+    <h1>Dashboard</h1>
     <p style="text-align: center; color: #64748b; margin-bottom: 30px;">
       Estatísticas dos seus atendimentos
     </p>
@@ -128,7 +128,7 @@
 
     <!-- Filtros -->
     <div style="margin: 30px 0; padding: 20px; background: white; border-radius: 15px;">
-      <h3>📅 Filtros</h3>
+      <h3>Filtros</h3>
       <div style="display: flex; gap: 15px; flex-wrap: wrap; align-items: center;">
         <div class="form-group" style="flex: 1; min-width: 150px;">
           <label for="dataInicio">Data Inicial</label>
@@ -138,33 +138,33 @@
           <label for="dataFim">Data Final</label>
           <input type="date" id="dataFim">
         </div>
-        <button id="filtrarBtn" class="btn">🔍 Filtrar</button>
-        <button id="limparBtn" class="btn btn-secondary">🗑️ Limpar</button>
+        <button id="filtrarBtn" class="btn">Filtrar</button>
+        <button id="limparBtn" class="btn btn-secondary">Limpar</button>
       </div>
     </div>
 
     <!-- Gráfico -->
     <div class="chart-container">
-      <h3>📈 Atendimentos por Dia</h3>
+      <h3>Atendimentos por Dia</h3>
       <canvas id="graficoAtendimentos"></canvas>
     </div>
 
     <!-- Botões de Exportação -->
     <div class="export-buttons">
       <button class="btn-export" onclick="exportarExcel()">
-        📊 Exportar para Excel
+        Exportar para Excel
       </button>
       <button class="btn-export" onclick="exportarJSON()">
-        💾 Exportar JSON
+        Exportar JSON
       </button>
       <button class="btn-export" onclick="imprimirRelatorio()">
-        🖨️ Imprimir Relatório
+        Imprimir Relatório
       </button>
     </div>
 
     <!-- Lista de Atendimentos -->
     <div style="margin: 30px 0;">
-      <h3>📋 Últimos Atendimentos</h3>
+      <h3>Últimos Atendimentos</h3>
       <div id="listaAtendimentos">
         <p style="text-align: center; color: #64748b;">Carregando...</p>
       </div>
@@ -291,10 +291,10 @@
           <div class="atendimento-item" style="margin-bottom: 15px;">
             <div class="atendimento-info">
               <h4>${atendimento.cliente.nome}</h4>
-              <p>📅 Início: ${inicio}</p>
-              <p>⏰ Fim: ${fim}</p>
-              <p>⏱️ Duração: ${duracao}</p>
-              ${atendimento.observacao ? `<p>📝 ${atendimento.observacao}</p>` : ''}
+              <p>Início: ${inicio}</p>
+              <p>Fim: ${fim}</p>
+              <p>Duração: ${duracao}</p>
+              ${atendimento.observacao ? `<p>Observação: ${atendimento.observacao}</p>` : ''}
             </div>
           </div>
         `;
@@ -305,7 +305,7 @@
 
     // Formatar horas
     const formatarHoras = (milissegundos) => {
-      if (!milissegundos || milissegundos === 0) return "00:00";
+      if (!milissegundos || milissegundos === 0) return "00:00:00";
       
       // Se o valor for muito grande (provavelmente já está em milissegundos)
       let segundos;
@@ -317,7 +317,8 @@
       
       const horas = Math.floor(segundos / 3600);
       const minutos = Math.floor((segundos % 3600) / 60);
-      return `${String(horas).padStart(2, '0')}:${String(minutos).padStart(2, '0')}`;
+      const segundosRestantes = segundos % 60;
+      return `${String(horas).padStart(2, '0')}:${String(minutos).padStart(2, '0')}:${String(segundosRestantes).padStart(2, '0')}`;
     };
 
     // Exportar para Excel
@@ -338,7 +339,7 @@
         XLSX.utils.book_append_sheet(wb, ws, "Atendimentos");
         XLSX.writeFile(wb, "atendimentos.xlsx");
         
-        mostrarMensagem("✅ Excel exportado com sucesso!", "green");
+        mostrarMensagem("Excel exportado com sucesso!", "green");
       } catch (err) {
         console.error(err);
         mostrarMensagem("Erro ao exportar Excel", "red");
@@ -357,7 +358,7 @@
         link.click();
         URL.revokeObjectURL(url);
         
-        mostrarMensagem("✅ JSON exportado com sucesso!", "green");
+        mostrarMensagem("JSON exportado com sucesso!", "green");
       } catch (err) {
         console.error(err);
         mostrarMensagem("Erro ao exportar JSON", "red");

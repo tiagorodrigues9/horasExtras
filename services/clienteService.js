@@ -1,16 +1,22 @@
 import Cliente from "../models/Cliente.js";
+import { validarCNPJ } from "../utils/validators.js";
 
 // Listar clientes do usuário logado
 export const listarClientes = async (usuarioId) => {
-  console.log("🔍 Buscando clientes para usuário:", usuarioId);
+  console.log("Buscando clientes para usuário:", usuarioId);
   const clientes = await Cliente.find({ dono: usuarioId }).sort({ nome: 1 });
-  console.log("📋 Clientes encontrados:", clientes.length);
+  console.log("Clientes encontrados:", clientes.length);
   return clientes;
 };
 
 // Criar cliente associado ao usuário logado
 export const criarCliente = async ({ nome, endereco, cnpj }, usuarioId) => {
   if (!nome || !cnpj) throw new Error("Nome e CNPJ são obrigatórios");
+
+  // Valida CNPJ
+  if (!validarCNPJ(cnpj)) {
+    throw new Error("CNPJ inválido");
+  }
 
   // Verifica se o cliente já existe para esse usuário
   const clienteExistente = await Cliente.findOne({ cnpj, dono: usuarioId });

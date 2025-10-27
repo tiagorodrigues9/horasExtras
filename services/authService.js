@@ -3,8 +3,14 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import path from "path";
 import { fileURLToPath } from "url";
+import { validarEmail, validarSenha } from "../utils/validators.js";
 
-const JWT_SECRET = process.env.JWT_SECRET || "sua_chave_secreta";
+const JWT_SECRET = process.env.JWT_SECRET;
+
+if (!JWT_SECRET) {
+  console.error("JWT_SECRET não definido nas variáveis de ambiente");
+  process.exit(1);
+}
 
 // Config __dirname no ES Modules
 const __filename = fileURLToPath(import.meta.url);
@@ -14,6 +20,15 @@ const __dirname = path.dirname(__filename);
 export const register = async ({ nome, email, senha }) => {
   if (!nome || !email || !senha) {
     throw new Error("Todos os campos (nome, email e senha) são obrigatórios");
+  }
+
+  // Validações
+  if (!validarEmail(email)) {
+    throw new Error("Email inválido");
+  }
+
+  if (!validarSenha(senha)) {
+    throw new Error("Senha deve ter pelo menos 6 caracteres");
   }
 
   const usuarioExistente = await Usuario.findOne({ email });

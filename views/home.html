@@ -20,36 +20,36 @@
   <div class="container">
     <!-- Menu de navegação -->
     <nav class="menu">
-      <a href="/cadastrar-cliente">👥 Cliente</a>
-      <a href="/perfil">👤 Perfil</a>
-      <a href="#" id="logout">🚪 Sair</a>
+      <a href="/cadastrar-cliente">Cliente</a>
+      <a href="/perfil">Perfil</a>
+      <a href="#" id="logout">Sair</a>
     </nav>
 
-    <h1>🏠 Bem-vindo!</h1>
+    <h1>Bem-vindo!</h1>
     <p style="text-align: center; color: #64748b; margin-bottom: 30px;">Gerencie seus atendimentos e clientes</p>
 
     <!-- Botão de Dashboard -->
     <div style="text-align: center; margin: 30px 0; padding: 20px;">
       <a href="/dashboard" style="display: inline-block !important; padding: 20px 40px !important; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important; color: white !important; text-decoration: none !important; border-radius: 15px !important; font-size: 1.2rem !important; font-weight: 600 !important; box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3) !important; transition: all 0.3s ease !important; min-width: 300px;" onmouseover="this.style.transform='translateY(-3px)'; this.style.boxShadow='0 15px 40px rgba(102, 126, 234, 0.5)'" onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 10px 30px rgba(102, 126, 234, 0.3)'">
-        📊 Dashboard - Ver Estatísticas
+        Dashboard - Ver Estatísticas
       </a>
     </div>
 
     <!-- Seção de Novo Atendimento -->
     <div class="novo-atendimento">
-      <h2>🚀 Iniciar Novo Atendimento</h2>
+      <h2>Iniciar Novo Atendimento</h2>
       <div class="form-group">
         <label for="clienteSelect">Selecione o cliente:</label>
         <select id="clienteSelect">
           <option value="">Carregando clientes...</option>
         </select>
       </div>
-      <button id="iniciarBtn" class="btn submit-btn">▶️ Iniciar Atendimento</button>
+      <button id="startBtn" class="btn submit-btn">Iniciar Atendimento</button>
     </div>
 
     <!-- Seção de Atendimentos em Aberto -->
     <div class="atendimentos-abertos">
-      <h2>⏱️ Atendimentos em Aberto</h2>
+      <h2>Atendimentos em Aberto</h2>
       <div id="listaAtendimentos" class="lista-atendimentos">
         <!-- Atendimentos serão carregados aqui -->
       </div>
@@ -58,14 +58,14 @@
     <!-- Modal para Observações -->
     <div id="modalObservacoes" class="modal" style="display: none;">
       <div class="modal-content">
-        <h3>📝 Finalizar Atendimento</h3>
+        <h3>Finalizar Atendimento</h3>
         <div class="form-group">
           <label for="observacaoFinalizar">Observações sobre o atendimento:</label>
           <textarea id="observacaoFinalizar" placeholder="Digite suas observações sobre o atendimento..." rows="4"></textarea>
         </div>
         <div class="modal-buttons">
-          <button id="cancelarFinalizar" class="btn btn-secondary">❌ Cancelar</button>
-          <button id="confirmarFinalizar" class="btn">✅ Finalizar</button>
+          <button id="cancelarFinalizar" class="btn btn-secondary">Cancelar</button>
+          <button id="confirmarFinalizar" class="btn">Finalizar</button>
         </div>
       </div>
     </div>
@@ -81,7 +81,7 @@
 
     // Elementos DOM
     const clienteSelect = document.getElementById("clienteSelect");
-    const iniciarBtn = document.getElementById("iniciarBtn");
+    const iniciarBtn = document.getElementById("startBtn");
     const listaAtendimentos = document.getElementById("listaAtendimentos");
     const modalObservacoes = document.getElementById("modalObservacoes");
     const observacaoFinalizar = document.getElementById("observacaoFinalizar");
@@ -143,7 +143,7 @@
               <p class="tempo-decorrido" data-inicio="${atendimento.inicio}">00:00:00</p>
             </div>
             <button class="btn btn-danger finalizar-btn" data-id="${atendimento._id}">
-              ⏹️ Finalizar Atendimento
+              Finalizar Atendimento
             </button>
           `;
           listaAtendimentos.appendChild(div);
@@ -204,7 +204,7 @@
         const data = await res.json();
 
         if (res.ok) {
-          mostrarMensagem("✅ Atendimento iniciado com sucesso!", "green");
+          mostrarMensagem("Atendimento iniciado com sucesso!", "green");
           clienteSelect.value = "";
           carregarAtendimentos();
         } else {
@@ -259,7 +259,7 @@
         const data = await res.json();
 
         if (res.ok) {
-          mostrarMensagem("✅ Atendimento finalizado com sucesso!", "green");
+          mostrarMensagem("Atendimento finalizado com sucesso!", "green");
           fecharModal();
           carregarAtendimentos();
         } else {
@@ -292,10 +292,10 @@
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('/service-worker.js')
           .then((registration) => {
-            console.log('✅ Service Worker registrado com sucesso:', registration.scope);
+            console.log('Service Worker registrado com sucesso:', registration.scope);
           })
           .catch((error) => {
-            console.log('❌ Falha ao registrar Service Worker:', error);
+            console.log('Falha ao registrar Service Worker:', error);
           });
       });
     }

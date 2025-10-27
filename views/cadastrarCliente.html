@@ -19,7 +19,7 @@
       <a href="/home">← Voltar</a>
     </div>
     
-    <h1>👥 Cadastrar Cliente</h1>
+    <h1>Cadastrar Cliente</h1>
     <p style="text-align: center; color: #64748b; margin-bottom: 30px;">Preencha os dados do cliente</p>
 
     <form id="clienteForm">
@@ -73,7 +73,7 @@
       try {
         const token = localStorage.getItem("token");
         if (!token) {
-          mensagemEl.textContent = "❌ Faça login para cadastrar clientes";
+          mensagemEl.textContent = "Faça login para cadastrar clientes";
           mensagemEl.style.color = "red";
           return;
         }
@@ -90,7 +90,7 @@
         const data = await res.json();
 
         if (res.ok) {
-          mensagemEl.textContent = "✅ Cliente cadastrado com sucesso!";
+          mensagemEl.textContent = "Cliente cadastrado com sucesso!";
           mensagemEl.style.color = "green";
           clienteForm.reset();
 
