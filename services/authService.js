@@ -75,11 +75,55 @@ export const getMe = async (token) => {
   }
 };
 
+// Buscar dados do usuário pelo ID
+export const getMeById = async (userId) => {
+  try {
+    const usuario = await Usuario.findById(userId).select('-senha');
+    
+    if (!usuario) {
+      throw new Error("Usuário não encontrado");
+    }
+
+    return usuario;
+  } catch (err) {
+    throw new Error("Usuário não encontrado");
+  }
+};
+
 // Atualizar perfil do usuário
 export const updateProfile = async (token, { nome, fotoFile }) => {
   try {
     const decoded = jwt.verify(token, JWT_SECRET);
     const usuario = await Usuario.findById(decoded.id);
+    
+    if (!usuario) {
+      throw new Error("Usuário não encontrado");
+    }
+
+    // Atualizar nome se fornecido
+    if (nome) {
+      usuario.nome = nome;
+    }
+
+    // Atualizar foto se fornecida
+    if (fotoFile) {
+      usuario.foto = `/uploads/${fotoFile.filename}`;
+    }
+
+    await usuario.save();
+
+    // Retornar usuário sem senha
+    const { senha: _, ...usuarioSemSenha } = usuario.toObject();
+    return usuarioSemSenha;
+  } catch (err) {
+    throw new Error("Erro ao atualizar perfil: " + err.message);
+  }
+};
+
+// Atualizar perfil do usuário pelo ID
+export const updateProfileById = async (userId, { nome, fotoFile }) => {
+  try {
+    const usuario = await Usuario.findById(userId);
     
     if (!usuario) {
       throw new Error("Usuário não encontrado");

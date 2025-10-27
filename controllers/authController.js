@@ -40,12 +40,9 @@ export const login = async (req, res) => {
 // Buscar dados do usuário logado
 export const getMe = async (req, res) => {
   try {
-    const token = req.headers.authorization?.replace('Bearer ', '');
-    if (!token) {
-      return res.status(401).json({ error: "Token não fornecido" });
-    }
-
-    const usuario = await authService.getMe(token);
+    // O middleware authenticateToken já extraiu o usuário do token
+    // Basta buscar os dados completos do usuário pelo ID
+    const usuario = await authService.getMeById(req.usuario.id);
     res.json(usuario);
   } catch (err) {
     console.error(err);
@@ -56,15 +53,11 @@ export const getMe = async (req, res) => {
 // Atualizar perfil do usuário
 export const updateProfile = async (req, res) => {
   try {
-    const token = req.headers.authorization?.replace('Bearer ', '');
-    if (!token) {
-      return res.status(401).json({ error: "Token não fornecido" });
-    }
-
+    // O middleware authenticateToken já extraiu o usuário do token
     const { nome } = req.body;
     const fotoFile = req.file;
 
-    const usuario = await authService.updateProfile(token, { nome, fotoFile });
+    const usuario = await authService.updateProfileById(req.usuario.id, { nome, fotoFile });
     res.json(usuario);
   } catch (err) {
     console.error(err);

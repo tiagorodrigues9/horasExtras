@@ -23,7 +23,31 @@ const app = express();
 connectDB();
 
 // Middlewares
-app.use(cors());
+const corsOptions = {
+  origin: function (origin, callback) {
+    // Permitir requests sem origin (mobile apps, Postman, etc)
+    if (!origin) return callback(null, true);
+    
+    // Permitir em desenvolvimento
+    if (process.env.NODE_ENV === 'development') {
+      return callback(null, true);
+    }
+    
+    // Em produção, permitir apenas a URL do Render
+    const allowedOrigins = process.env.FRONTEND_URL 
+      ? [process.env.FRONTEND_URL, 'https://horasextras.onrender.com']
+      : ['https://horasextras.onrender.com'];
+    
+    if (allowedOrigins.indexOf(origin) !== -1 || !origin) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
