@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#3b82f6">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Hora Extra">
+  <meta name="description" content="Gerencie seu perfil no sistema Hora Extra">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="apple-touch-icon" href="/icons/icon-192x192.png">
+  <title>Perfil - Hora Extra</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="container">
+    <div class="menu">
+      <a href="/home">← Voltar</a>
+    </div>
+    
+    <h1>👤 Meu Perfil</h1>
+    <p style="text-align: center; color: #64748b; margin-bottom: 30px;">Gerencie suas informações pessoais</p>
+
+    <div class="perfil-container">
+      <div class="foto-perfil">
+        <img id="fotoAtual" src="" alt="Foto do perfil" style="display: none;">
+        <div id="semFoto" class="sem-foto">📷</div>
+      </div>
+      
+      <form id="perfilForm" enctype="multipart/form-data">
+        <div class="form-group">
+          <label for="nome">Nome</label>
+          <input type="text" id="nome" placeholder="Digite seu nome" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input type="email" id="email" placeholder="Email" disabled>
+        </div>
+        
+        <label for="foto" class="file-label">
+          <span id="fotoLabel">📸 Escolher nova foto</span>
+          <input type="file" id="foto" accept="image/*" style="display: none;">
+        </label>
+        
+        <button type="submit" class="btn submit-btn">Atualizar Perfil</button>
+      </form>
+    </div>
+
+    <div id="mensagem" class="mensagem"></div>
+  </div>
+
+  <script>
+    const perfilForm = document.getElementById("perfilForm");
+    const mensagemEl = document.getElementById("mensagem");
+    const fotoAtual = document.getElementById("fotoAtual");
+    const semFoto = document.getElementById("semFoto");
+    const fotoInput = document.getElementById("foto");
+    const fotoLabel = document.getElementById("fotoLabel");
+
+    // Carregar dados do usuário
+    const carregarPerfil = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) return window.location.href = "/login";
+
+      try {
+        const res = await fetch("/auth/me", {
+          headers: { "Authorization": `Bearer ${token}` }
+        });
+        const data = await res.json();
+        if (res.ok) {
+          document.getElementById("nome").value = data.nome || "";
+          document.getElementById("email").value = data.email || "";
+          
+          // Mostrar foto atual se existir
+          if (data.foto) {
+            fotoAtual.src = data.foto;
+            fotoAtual.style.display = "block";
+            semFoto.style.display = "none";
+          } else {
+            fotoAtual.style.display = "none";
+            semFoto.style.display = "block";
+          }
+        } else {
+          mensagemEl.textContent = data.error || "Erro ao carregar perfil";
+          mensagemEl.style.color = "red";
+        }
+      } catch (err) {
+        console.error(err);
+        mensagemEl.textContent = "Erro de conexão com o servidor";
+        mensagemEl.style.color = "red";
+      }
+    };
+
+    carregarPerfil();
+
+    // Preview da nova foto
+    fotoInput.addEventListener("change", (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          fotoAtual.src = e.target.result;
+          fotoAtual.style.display = "block";
+          semFoto.style.display = "none";
+          fotoLabel.textContent = "📸 Trocar foto";
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    // Atualizar perfil
+    perfilForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const token = localStorage.getItem("token");
+      if (!token) return window.location.href = "/login";
+
+      const formData = new FormData();
+      formData.append("nome", document.getElementById("nome").value.trim());
+      const fotoFile = document.getElementById("foto").files[0];
+      if (fotoFile) formData.append("foto", fotoFile);
+
+      try {
+        const res = await fetch("/auth/perfil", {
+          method: "PUT",
+          headers: { "Authorization": `Bearer ${token}` },
+          body: formData
+        });
+        const data = await res.json();
+        if (res.ok) {
+          mensagemEl.textContent = "✅ Perfil atualizado com sucesso!";
+          mensagemEl.style.color = "green";
+          
+          // Limpar input de foto após sucesso
+          fotoInput.value = "";
+          fotoLabel.textContent = "📸 Escolher nova foto";
+          
+          // Recarregar dados para mostrar foto atualizada
+          setTimeout(carregarPerfil, 1000);
+        } else {
+          mensagemEl.textContent = data.error || "Erro ao atualizar perfil";
+          mensagemEl.style.color = "red";
+        }
+      } catch (err) {
+        console.error(err);
+        mensagemEl.textContent = "Erro de conexão com o servidor";
+        mensagemEl.style.color = "red";
+      }
+    });
+  </script>
+</body>
+</html>

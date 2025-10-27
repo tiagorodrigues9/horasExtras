@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador de Ícones PNG - Hora Extra</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .icon-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .icon-item {
+            text-align: center;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        canvas {
+            border: 1px solid #ccc;
+            margin: 10px 0;
+        }
+        button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #1d4ed8;
+        }
+        .download-all {
+            background: #10b981;
+            padding: 12px 24px;
+            font-size: 16px;
+            margin: 20px 0;
+        }
+        .download-all:hover {
+            background: #059669;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🕐 Gerador de Ícones PNG - Hora Extra</h1>
+        <p>Este gerador cria todos os ícones necessários para o PWA. Clique em "Download" para baixar cada ícone individualmente ou "Download Todos" para baixar todos de uma vez.</p>
+        
+        <button class="download-all" onclick="downloadAllIcons()">📥 Download Todos os Ícones</button>
+        
+        <div class="icon-grid" id="iconGrid"></div>
+        
+        <div style="margin-top: 30px; padding: 20px; background: #f8fafc; border-radius: 8px;">
+            <h3>📋 Instruções:</h3>
+            <ol>
+                <li>Clique em "Download Todos os Ícones" para baixar todos de uma vez</li>
+                <li>Ou clique em "Download" individual para cada tamanho</li>
+                <li>Salve os arquivos na pasta <code>public/icons/</code></li>
+                <li>Renomeie os arquivos para: <code>icon-[tamanho]x[tamanho].png</code></li>
+            </ol>
+            
+            <h3>📱 Tamanhos necessários:</h3>
+            <ul>
+                <li>72x72 - Android Chrome</li>
+                <li>96x96 - Android Chrome</li>
+                <li>128x128 - Android Chrome</li>
+                <li>144x144 - Windows</li>
+                <li>152x152 - iOS Safari</li>
+                <li>192x192 - Android</li>
+                <li>384x384 - Android</li>
+                <li>512x512 - Android</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        const sizes = [72, 96, 128, 144, 152, 192, 384, 512];
+        const iconGrid = document.getElementById('iconGrid');
+        
+        function createIcon(size) {
+            const canvas = document.createElement('canvas');
+            canvas.width = size;
+            canvas.height = size;
+            const ctx = canvas.getContext('2d');
+            
+            // Fundo gradiente
+            const gradient = ctx.createLinearGradient(0, 0, size, size);
+            gradient.addColorStop(0, '#667eea');
+            gradient.addColorStop(1, '#764ba2');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, size, size);
+            
+            // Cantos arredondados
+            ctx.globalCompositeOperation = 'destination-in';
+            ctx.beginPath();
+            ctx.roundRect(0, 0, size, size, size * 0.1);
+            ctx.fill();
+            ctx.globalCompositeOperation = 'source-over';
+            
+            // Círculo do relógio
+            const centerX = size / 2;
+            const centerY = size / 2;
+            const radius = size * 0.35;
+            
+            ctx.strokeStyle = 'white';
+            ctx.lineWidth = Math.max(2, size * 0.04);
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+            ctx.stroke();
+            
+            // Ponteiros do relógio
+            ctx.lineWidth = Math.max(1, size * 0.02);
+            ctx.lineCap = 'round';
+            
+            // Ponteiro das horas (3 horas)
+            ctx.beginPath();
+            ctx.moveTo(centerX, centerY);
+            ctx.lineTo(centerX + radius * 0.4, centerY - radius * 0.2);
+            ctx.stroke();
+            
+            // Ponteiro dos minutos (12 horas)
+            ctx.beginPath();
+            ctx.moveTo(centerX, centerY);
+            ctx.lineTo(centerX, centerY - radius * 0.6);
+            ctx.stroke();
+            
+            // Centro do relógio
+            ctx.fillStyle = 'white';
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, Math.max(2, size * 0.03), 0, 2 * Math.PI);
+            ctx.fill();
+            
+            // Marcações das horas
+            const markRadius = radius + size * 0.05;
+            ctx.fillStyle = 'white';
+            const marks = [
+                { angle: 0, x: centerX, y: centerY - markRadius },
+                { angle: Math.PI/2, x: centerX + markRadius, y: centerY },
+                { angle: Math.PI, x: centerX, y: centerY + markRadius },
+                { angle: 3*Math.PI/2, x: centerX - markRadius, y: centerY }
+            ];
+            
+            marks.forEach(mark => {
+                ctx.beginPath();
+                ctx.arc(mark.x, mark.y, Math.max(1, size * 0.015), 0, 2 * Math.PI);
+                ctx.fill();
+            });
+            
+            return canvas;
+        }
+        
+        function downloadIcon(size) {
+            const canvas = createIcon(size);
+            const link = document.createElement('a');
+            link.download = `icon-${size}x${size}.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+        
+        function downloadAllIcons() {
+            sizes.forEach((size, index) => {
+                setTimeout(() => {
+                    downloadIcon(size);
+                }, index * 200); // Delay entre downloads
+            });
+        }
+        
+        // Criar interface para cada tamanho
+        sizes.forEach(size => {
+            const div = document.createElement('div');
+            div.className = 'icon-item';
+            
+            const canvas = createIcon(size);
+            div.appendChild(canvas);
+            
+            const title = document.createElement('h3');
+            title.textContent = `${size}x${size}px`;
+            div.appendChild(title);
+            
+            const button = document.createElement('button');
+            button.textContent = '📥 Download';
+            button.onclick = () => downloadIcon(size);
+            div.appendChild(button);
+            
+            iconGrid.appendChild(div);
+        });
+    </script>
+</body>
+</html>

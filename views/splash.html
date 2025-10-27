@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#3b82f6">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Hora Extra">
+  <meta name="description" content="Sistema completo para gestão de horas extras e atendimentos">
+  <meta name="keywords" content="hora extra, atendimento, gestão, tempo">
+  <meta name="author" content="Hora Extra">
+  
+  <!-- PWA Meta Tags -->
+  <link rel="manifest" href="/manifest.json">
+  <link rel="apple-touch-icon" href="/icons/icon-192x192.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/icons/icon-16x16.png">
+  
+  <!-- Preload critical resources -->
+  <link rel="preload" href="/css/style.css" as="style">
+  
+  <title>Hora Extra - Carregando</title>
+  <link rel="stylesheet" href="/css/style.css">
+  <style>
+    .splash-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      animation: fadeOut 0.5s ease-in-out 3s forwards;
+    }
+
+    .logo-container {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .logo {
+      font-size: 4rem;
+      font-weight: 700;
+      color: white;
+      text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+      margin-bottom: 10px;
+      animation: logoFloat 2s ease-in-out infinite;
+    }
+
+    .subtitle {
+      font-size: 1.2rem;
+      color: rgba(255, 255, 255, 0.9);
+      font-weight: 300;
+      letter-spacing: 2px;
+    }
+
+    .loading-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .loading-spinner {
+      width: 50px;
+      height: 50px;
+      border: 4px solid rgba(255, 255, 255, 0.3);
+      border-top: 4px solid white;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    .loading-text {
+      color: white;
+      font-size: 1rem;
+      font-weight: 500;
+      opacity: 0.8;
+    }
+
+    .progress-bar {
+      width: 200px;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #3b82f6, #1d4ed8);
+      border-radius: 2px;
+      animation: progressFill 3s ease-in-out forwards;
+    }
+
+    @keyframes logoFloat {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-10px); }
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    @keyframes progressFill {
+      0% { width: 0%; }
+      100% { width: 100%; }
+    }
+
+    @keyframes fadeOut {
+      0% { opacity: 1; }
+      100% { 
+        opacity: 0; 
+        visibility: hidden;
+      }
+    }
+
+    .features {
+      position: absolute;
+      bottom: 60px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 30px;
+      opacity: 0.7;
+    }
+
+    .feature {
+      text-align: center;
+      color: white;
+    }
+
+    .feature-icon {
+      font-size: 2rem;
+      margin-bottom: 8px;
+      display: block;
+    }
+
+    .feature-text {
+      font-size: 0.9rem;
+      font-weight: 300;
+    }
+
+    @media (max-width: 768px) {
+      .logo {
+        font-size: 3rem;
+      }
+      
+      .features {
+        flex-direction: column;
+        gap: 20px;
+        bottom: 40px;
+      }
+      
+      .progress-bar {
+        width: 150px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Splash Screen -->
+  <div class="splash-screen" id="splashScreen">
+    <div class="logo-container">
+      <div class="logo">⏰ Hora Extra</div>
+      <div class="subtitle">SISTEMA DE GESTÃO</div>
+    </div>
+
+    <div class="loading-container">
+      <div class="loading-spinner"></div>
+      <div class="loading-text">Carregando sistema...</div>
+      <div class="progress-bar">
+        <div class="progress-fill"></div>
+      </div>
+    </div>
+
+    <div class="features">
+      <div class="feature">
+        <span class="feature-icon">⏱️</span>
+        <div class="feature-text">Controle de Tempo</div>
+      </div>
+      <div class="feature">
+        <span class="feature-icon">👥</span>
+        <div class="feature-text">Gestão de Clientes</div>
+      </div>
+      <div class="feature">
+        <span class="feature-icon">📊</span>
+        <div class="feature-text">Relatórios</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Registra o Service Worker
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/service-worker.js')
+          .then((registration) => {
+            console.log('✅ Service Worker registrado com sucesso:', registration.scope);
+          })
+          .catch((error) => {
+            console.log('❌ Falha ao registrar Service Worker:', error);
+          });
+      });
+    }
+
+    // Aguarda 3 segundos e redireciona para o login
+    setTimeout(() => {
+      window.location.href = '/login';
+    }, 3000);
+
+    // Adiciona efeito de digitação no texto de carregamento
+    const loadingTexts = [
+      'Carregando sistema...',
+      'Conectando ao servidor...',
+      'Preparando interface...',
+      'Quase pronto...'
+    ];
+
+    let currentTextIndex = 0;
+    const loadingTextElement = document.querySelector('.loading-text');
+
+    const updateLoadingText = () => {
+      loadingTextElement.textContent = loadingTexts[currentTextIndex];
+      currentTextIndex = (currentTextIndex + 1) % loadingTexts.length;
+    };
+
+    // Atualiza o texto a cada 800ms
+    setInterval(updateLoadingText, 800);
+
+    // Adiciona efeito de partículas (opcional)
+    const createParticle = () => {
+      const particle = document.createElement('div');
+      particle.style.position = 'absolute';
+      particle.style.width = '4px';
+      particle.style.height = '4px';
+      particle.style.background = 'rgba(255, 255, 255, 0.6)';
+      particle.style.borderRadius = '50%';
+      particle.style.left = Math.random() * window.innerWidth + 'px';
+      particle.style.top = window.innerHeight + 'px';
+      particle.style.animation = `particleFloat ${3 + Math.random() * 2}s linear forwards`;
+      
+      document.body.appendChild(particle);
+      
+      setTimeout(() => {
+        particle.remove();
+      }, 5000);
+    };
+
+    // Cria partículas periodicamente
+    setInterval(createParticle, 200);
+
+    // Adiciona CSS para animação das partículas
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes particleFloat {
+        to {
+          transform: translateY(-100vh) rotate(360deg);
+          opacity: 0;
+        }
+      }
+    `;
+    document.head.appendChild(style);
+  </script>
+</body>
+</html>

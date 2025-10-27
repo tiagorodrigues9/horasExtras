@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#3b82f6">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="Hora Extra">
+  <meta name="description" content="Cadastrar novo cliente no sistema">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="apple-touch-icon" href="/icons/icon-192x192.png">
+  <title>Cadastrar Cliente - Hora Extra</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="container">
+    <div class="menu">
+      <a href="/home">← Voltar</a>
+    </div>
+    
+    <h1>👥 Cadastrar Cliente</h1>
+    <p style="text-align: center; color: #64748b; margin-bottom: 30px;">Preencha os dados do cliente</p>
+
+    <form id="clienteForm">
+      <div class="form-group">
+        <label for="nome">Nome da Empresa</label>
+        <input type="text" id="nome" placeholder="Digite o nome da empresa" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="endereco">Endereço</label>
+        <input type="text" id="endereco" placeholder="Digite o endereço completo">
+      </div>
+      
+      <div class="form-group">
+        <label for="cnpj">CNPJ</label>
+        <input type="text" id="cnpj" placeholder="00.000.000/0000-00" maxlength="18" required>
+      </div>
+      
+      <button type="submit" class="btn submit-btn">Cadastrar Cliente</button>
+    </form>
+
+    <div id="mensagem" class="mensagem"></div>
+  </div>
+
+  <script>
+    const cnpjInput = document.getElementById("cnpj");
+    const clienteForm = document.getElementById("clienteForm");
+    const mensagemEl = document.getElementById("mensagem");
+
+    // ===== Formatação automática do CNPJ =====
+    cnpjInput.addEventListener("input", () => {
+      let value = cnpjInput.value.replace(/\D/g, ""); // remove tudo que não for número
+      if (value.length > 14) value = value.slice(0, 14);
+
+      value = value.replace(/^(\d{2})(\d)/, "$1.$2");
+      value = value.replace(/^(\d{2})\.(\d{3})(\d)/, "$1.$2.$3");
+      value = value.replace(/\.(\d{3})(\d)/, ".$1/$2");
+      value = value.replace(/(\d{4})(\d)/, "$1-$2");
+
+      cnpjInput.value = value;
+    });
+
+    // ===== Cadastro de Cliente =====
+    clienteForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const nome = document.getElementById("nome").value.trim();
+      const endereco = document.getElementById("endereco").value.trim();
+      const cnpj = document.getElementById("cnpj").value.trim();
+
+      try {
+        const res = await fetch("/clientes", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ nome, endereco, cnpj })
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+          mensagemEl.textContent = "✅ Cliente cadastrado com sucesso!";
+          mensagemEl.style.color = "green";
+          clienteForm.reset();
+
+          // Redireciona para /home imediatamente
+          window.location.href = "/home";
+        } else {
+          mensagemEl.textContent = data.error || "Erro ao cadastrar cliente";
+          mensagemEl.style.color = "red";
+        }
+      } catch (err) {
+        console.error(err);
+        mensagemEl.textContent = "Erro de conexão com o servidor";
+        mensagemEl.style.color = "red";
+      }
+    });
+  </script>
+</body>
+</html>
