@@ -54,7 +54,20 @@ app.use(cookieParser());
 
 // Servir arquivos estáticos do frontend buildado em produção
 if (process.env.NODE_ENV === "production") {
-  app.use(express.static(path.join(__dirname, "frontend/build")));
+  const buildPath = path.join(__dirname, "frontend/build");
+  console.log("📁 Tentando servir arquivos estáticos de:", buildPath);
+  
+  // Servir arquivos estáticos com configuração explícita
+  app.use(express.static(buildPath, {
+    setHeaders: (res, filepath) => {
+      // Garantir que arquivos JS tenham o content-type correto
+      if (filepath.endsWith('.js')) {
+        res.setHeader('Content-Type', 'application/javascript');
+      }
+    }
+  }));
+  
+  console.log("✅ Servindo arquivos estáticos de:", buildPath);
 } else {
   // Em desenvolvimento, servir arquivos estáticos da pasta public
   app.use(express.static(path.join(__dirname, "public")));
@@ -68,7 +81,16 @@ app.use("/usuarios", usuarioRoutes);
 
 // Em produção, servir o React app para todas as rotas não-API
 if (process.env.NODE_ENV === "production") {
-  app.get(/.*/, (req, res) => {
+  // Rota catch-all deve ser a última
+  app.get('*', (req, res) => {
+    // Não servir index.html para rotas de API
+    if (req.path.startsWith('/auth/') || 
+        req.path.startsWith('/clientes/') || 
+        req.path.startsWith('/atendimentos/') || 
+        req.path.startsWith('/usuarios/')) {
+      return res.status(404).json({ error: 'Rota não encontrada' });
+    }
+    
     res.sendFile(path.join(__dirname, "frontend/build", "index.html"));
   });
 } else {
