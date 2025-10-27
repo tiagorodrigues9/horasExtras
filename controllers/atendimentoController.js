@@ -43,3 +43,15 @@ export const listarAtendimentos = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
+export const listarEstatisticas = async (req, res) => {
+  try {
+    const usuarioId = req.usuario.id;
+    const { inicio, fim } = req.query;
+    const estatisticas = await atendimentoService.listarEstatisticas(usuarioId, { inicio, fim });
+    res.json(estatisticas);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: err.message });
+  }
+};

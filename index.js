@@ -34,6 +34,7 @@ app.get("/", (req, res) => res.sendFile(path.join(__dirname, "views", "splash.ht
 app.get("/login", (req, res) => res.sendFile(path.join(__dirname, "views", "login.html")));
 app.get("/cadastrar", (req, res) => res.sendFile(path.join(__dirname, "views", "cadastrarUsuario.html")));
 app.get("/home", (req, res) => res.sendFile(path.join(__dirname, "views", "home.html")));
+app.get("/dashboard", (req, res) => res.sendFile(path.join(__dirname, "views", "dashboard.html")));
 app.get("/cadastrar-cliente", (req, res) => res.sendFile(path.join(__dirname, "views", "cadastrarCliente.html")));
 app.get("/perfil", (req, res) => res.sendFile(path.join(__dirname, "views", "perfil.html")));
 app.use("/usuarios", usuarioRoutes);

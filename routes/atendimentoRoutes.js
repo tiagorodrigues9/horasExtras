@@ -1,5 +1,5 @@
 import express from "express";
-import { iniciarAtendimento, finalizarAtendimento, listarAtendimentos } from "../controllers/atendimentoController.js";
+import { iniciarAtendimento, finalizarAtendimento, listarAtendimentos, listarEstatisticas } from "../controllers/atendimentoController.js";
 import { authenticateToken } from "../middleware/auth.js";
 
 const router = express.Router();
@@ -9,6 +9,7 @@ router.use(authenticateToken);
 
 router.post("/iniciar", iniciarAtendimento);
 router.put("/finalizar/:id", finalizarAtendimento);
+router.get("/estatisticas", listarEstatisticas);
 router.get("/", listarAtendimentos);
 
 export default router;

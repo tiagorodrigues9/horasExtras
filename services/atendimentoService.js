@@ -48,3 +48,76 @@ export const listarAtendimentos = async (usuarioId) => {
 
   return atendimentos;
 };
+
+// Lista estatísticas de atendimentos
+export const listarEstatisticas = async (usuarioId, { inicio, fim }) => {
+  if (!usuarioId) throw new Error("Usuário não informado");
+  
+  // Construir query com filtro de datas
+  const query = { 
+    usuario: usuarioId,
+    fim: { $exists: true } // Apenas atendimentos finalizados
+  };
+  
+  if (inicio && fim) {
+    query.inicio = {
+      $gte: new Date(inicio),
+      $lte: new Date(fim + 'T23:59:59')
+    };
+  }
+  
+  const atendimentos = await Atendimento.find(query)
+    .populate("usuario", "nome email")
+    .populate("cliente", "nome cnpj")
+    .sort({ inicio: -1 })
+    .limit(50); // Limitar últimos 50 para performance
+  
+  // Calcular estatísticas
+  const totalAtendimentos = atendimentos.length;
+  let totalHoras = 0;
+  const clienteCounts = {};
+  
+  atendimentos.forEach(atendimento => {
+    if (atendimento.fim) {
+      const duracao = new Date(atendimento.fim) - new Date(atendimento.inicio);
+      totalHoras += duracao;
+      
+      const clienteNome = atendimento.cliente.nome;
+      clienteCounts[clienteNome] = (clienteCounts[clienteNome] || 0) + 1;
+    }
+  });
+  
+  const mediaHoras = totalAtendimentos > 0 ? totalHoras / totalAtendimentos : 0;
+  const clienteFrequente = Object.keys(clienteCounts).reduce((a, b) => 
+    clienteCounts[a] > clienteCounts[b] ? a : b, 'Nenhum'
+  );
+  
+  // Preparar dados para o gráfico (agrupar por dia)
+  const graficoData = {};
+  atendimentos.forEach(atendimento => {
+    const data = new Date(atendimento.inicio).toLocaleDateString('pt-BR');
+    graficoData[data] = (graficoData[data] || 0) + 1;
+  });
+  
+  const grafico = Object.keys(graficoData).sort().map(data => ({
+    data,
+    count: graficoData[data]
+  }));
+  
+  // Adicionar duração calculada a cada atendimento
+  const atendimentosComDuracao = atendimentos.map(atendimento => ({
+    ...atendimento.toObject(),
+    duracao: atendimento.fim ? 
+      (new Date(atendimento.fim) - new Date(atendimento.inicio)) : 
+      null
+  }));
+  
+  return {
+    totalAtendimentos,
+    totalHoras,
+    mediaHoras,
+    clienteFrequente,
+    grafico,
+    atendimentos: atendimentosComDuracao
+  };
+};

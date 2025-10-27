@@ -1,4 +1,4 @@
-const CACHE_NAME = 'hora-extra-v1.0.0';
+const CACHE_NAME = 'hora-extra-v2.0.0';
 const urlsToCache = [
   '/',
   '/login',

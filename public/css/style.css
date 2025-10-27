@@ -552,6 +552,41 @@ input[disabled] {
   }
 }
 
+/* Container do botão Dashboard */
+.dashboard-container {
+  text-align: center;
+  margin-bottom: 40px;
+  position: relative;
+  z-index: 10; /* garante que fique acima de outros elementos */
+}
+
+
+/* Botão Dashboard */
+.btn-dashboard {
+  display: inline-block;
+  padding: 20px 40px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white !important;
+  text-decoration: none !important;
+  border-radius: 15px;
+  font-size: 1.2rem;
+  font-weight: 600;
+  box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+  transition: all 0.3s ease;
+}
+
+.btn-dashboard:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 15px 40px rgba(102, 126, 234, 0.5);
+}
+
+@media (max-width: 768px) {
+  .btn-dashboard {
+    padding: 15px 30px;
+    font-size: 1rem;
+  }
+}
+
 /* Estilos específicos para login e cadastro */
 .login-container, .cadastro-container {
   max-width: 450px;
