@@ -2,7 +2,10 @@ import Cliente from "../models/Cliente.js";
 
 // Listar clientes do usuário logado
 export const listarClientes = async (usuarioId) => {
-  return await Cliente.find({ dono: usuarioId }).sort({ nome: 1 });
+  console.log("🔍 Buscando clientes para usuário:", usuarioId);
+  const clientes = await Cliente.find({ dono: usuarioId }).sort({ nome: 1 });
+  console.log("📋 Clientes encontrados:", clientes.length);
+  return clientes;
 };
 
 // Criar cliente associado ao usuário logado
