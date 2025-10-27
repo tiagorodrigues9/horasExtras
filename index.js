@@ -95,7 +95,14 @@ if (process.env.NODE_ENV === "production") {
   app.get('/perfil', serveIndex);
   
   // Catch-all - serve index.html para qualquer outro GET request
+  // Mas NÃO para arquivos estáticos (arquivos com extensão)
   app.use((req, res) => {
+    // Se for um arquivo estático (tem extensão), não servir index.html
+    const hasFileExtension = /\.[^.]+$/.test(req.path);
+    if (hasFileExtension) {
+      return res.status(404).send('File not found');
+    }
+    
     serveIndex(req, res);
   });
 } else {
