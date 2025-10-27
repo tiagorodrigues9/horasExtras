@@ -17,7 +17,7 @@
 
 ### **2. Obter String de Conexão:**
 ```
-mongodb+srv://SEU_USUARIO:SUA_SENHA@cluster0.xxxxx.mongodb.net/NOME_DO_BANCO?retryWrites=true&w=majority
+<!-- mongodb+srv://SEU_USUARIO:SUA_SENHA@cluster0.xxxxx.mongodb.net/NOME_DO_BANCO?retryWrites=true&w=majority -->
 ```
 
 ## 🚀 **Deploy no Render**
