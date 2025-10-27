@@ -144,8 +144,8 @@ export const Home: React.FC = () => {
             Iniciar Novo Atendimento
           </Typography>
           
-          <Box sx={{ display: 'flex', gap: 2, alignItems: 'center', mb: 2 }}>
-            <FormControl sx={{ minWidth: 200 }}>
+          <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 2, alignItems: { xs: 'stretch', sm: 'center' }, mb: 2 }}>
+            <FormControl sx={{ minWidth: { xs: '100%', sm: 200 } }}>
               <InputLabel>Cliente</InputLabel>
               <Select
                 value={clienteSelecionado}
@@ -164,6 +164,7 @@ export const Home: React.FC = () => {
               variant="contained"
               onClick={iniciarAtendimento}
               disabled={loading || !clienteSelecionado}
+              sx={{ width: { xs: '100%', sm: 'auto' } }}
             >
               Iniciar Atendimento
             </Button>
@@ -190,11 +191,12 @@ export const Home: React.FC = () => {
                     primary={atendimento.cliente.nome}
                     secondary={`Iniciado em: ${new Date(atendimento.inicio).toLocaleString()}`}
                   />
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                  <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, alignItems: 'center', gap: 1 }}>
                     <Chip
                       label={formatarTempo(atendimento.inicio)}
                       color="primary"
                       variant="outlined"
+                      size="small"
                     />
                     <Button
                       variant="contained"
@@ -202,6 +204,7 @@ export const Home: React.FC = () => {
                       size="small"
                       onClick={() => finalizarAtendimento(atendimento._id)}
                       disabled={loading}
+                      fullWidth={false}
                     >
                       Finalizar
                     </Button>

@@ -114,7 +114,7 @@ export const Clientes: React.FC = () => {
 
   return (
     <Box>
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={4}>
+      <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, justifyContent: 'space-between', alignItems: { xs: 'flex-start', sm: 'center' }, mb: 4, gap: 2 }}>
         <Typography variant="h4">
           Clientes
         </Typography>
@@ -123,6 +123,7 @@ export const Clientes: React.FC = () => {
           variant="contained"
           startIcon={<Add />}
           onClick={() => handleOpenDialog()}
+          fullWidth={{ xs: true, sm: false }}
         >
           Novo Cliente
         </Button>
