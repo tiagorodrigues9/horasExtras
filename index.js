@@ -52,6 +52,15 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
+// Rota de health check para manter o Render acordado
+app.get("/health", (req, res) => {
+  res.status(200).json({ 
+    status: "ok", 
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime()
+  });
+});
+
 // Servir arquivos estáticos do frontend buildado em produção
 if (process.env.NODE_ENV === "production") {
   const buildPath = path.join(__dirname, "frontend/build");

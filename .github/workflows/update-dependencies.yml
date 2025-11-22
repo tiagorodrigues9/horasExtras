@@ -1,0 +1,188 @@
+name: Update Dependencies
+
+on:
+  schedule:
+    # Executa diariamente às 3h da manhã (horário de Brasília)
+    - cron: "0 3 * * *"
+  workflow_dispatch: # Permite execução manual
+  push:
+    branches:
+      - main
+    paths:
+      - 'package.json'
+      - 'frontend/package.json'
+
+jobs:
+  update-backend:
+    name: Update Backend Dependencies
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Instalar npm-check-updates
+        run: npm install -g npm-check-updates
+
+      - name: Verificar atualizações do backend
+        id: check-backend
+        run: |
+          cd ${{ github.workspace }}
+          ncu --format json > backend-updates.json || echo "[]" > backend-updates.json
+          
+          # Verifica se há atualizações
+          UPDATES=$(cat backend-updates.json | jq 'length')
+          echo "updates_count=$UPDATES" >> $GITHUB_OUTPUT
+          
+          if [ "$UPDATES" -gt 0 ]; then
+            echo "has_updates=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_updates=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Atualizar package.json do backend
+        if: steps.check-backend.outputs.has_updates == 'true'
+        run: |
+          cd ${{ github.workspace }}
+          ncu -u
+
+      - name: Instalar dependências atualizadas
+        if: steps.check-backend.outputs.has_updates == 'true'
+        run: |
+          cd ${{ github.workspace }}
+          npm install
+
+      - name: Criar Pull Request (Backend)
+        if: steps.check-backend.outputs.has_updates == 'true'
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "chore(backend): atualizar dependências automaticamente"
+          title: "🔄 Atualizar dependências do backend"
+          body: |
+            ## 📦 Atualização Automática de Dependências - Backend
+            
+            Este PR foi criado automaticamente para atualizar as dependências do backend.
+            
+            ### 📊 Resumo
+            - **Total de atualizações**: ${{ steps.check-backend.outputs.updates_count }}
+            
+            ### ⚠️ Ações necessárias
+            - [ ] Revisar as mudanças
+            - [ ] Testar a aplicação localmente
+            - [ ] Verificar se não há breaking changes
+            - [ ] Aprovar e fazer merge quando estiver tudo ok
+            
+            ### 🔍 Como revisar
+            1. Verifique o arquivo `package.json` para ver as novas versões
+            2. Execute `npm install` localmente
+            3. Teste a aplicação
+            4. Se tudo estiver ok, aprove o PR
+            
+            ---
+            *Este PR foi criado automaticamente pelo workflow de atualização de dependências*
+          branch: update-dependencies-backend
+          delete-branch: true
+          labels: |
+            dependencies
+            backend
+            automated
+
+  update-frontend:
+    name: Update Frontend Dependencies
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Instalar npm-check-updates
+        run: npm install -g npm-check-updates
+
+      - name: Verificar atualizações do frontend
+        id: check-frontend
+        run: |
+          cd ${{ github.workspace }}/frontend
+          ncu --format json > ../frontend-updates.json || echo "[]" > ../frontend-updates.json
+          
+          # Verifica se há atualizações
+          UPDATES=$(cat ../frontend-updates.json | jq 'length')
+          echo "updates_count=$UPDATES" >> $GITHUB_OUTPUT
+          
+          if [ "$UPDATES" -gt 0 ]; then
+            echo "has_updates=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_updates=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Atualizar package.json do frontend
+        if: steps.check-frontend.outputs.has_updates == 'true'
+        run: |
+          cd ${{ github.workspace }}/frontend
+          ncu -u
+
+      - name: Instalar dependências atualizadas
+        if: steps.check-frontend.outputs.has_updates == 'true'
+        run: |
+          cd ${{ github.workspace }}/frontend
+          npm install
+
+      - name: Criar Pull Request (Frontend)
+        if: steps.check-frontend.outputs.has_updates == 'true'
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "chore(frontend): atualizar dependências automaticamente"
+          title: "🔄 Atualizar dependências do frontend"
+          body: |
+            ## 📦 Atualização Automática de Dependências - Frontend
+            
+            Este PR foi criado automaticamente para atualizar as dependências do frontend.
+            
+            ### 📊 Resumo
+            - **Total de atualizações**: ${{ steps.check-frontend.outputs.updates_count }}
+            
+            ### ⚠️ Ações necessárias
+            - [ ] Revisar as mudanças
+            - [ ] Testar a aplicação localmente
+            - [ ] Verificar se não há breaking changes
+            - [ ] Aprovar e fazer merge quando estiver tudo ok
+            
+            ### 🔍 Como revisar
+            1. Verifique o arquivo `frontend/package.json` para ver as novas versões
+            2. Execute `cd frontend && npm install` localmente
+            3. Teste a aplicação
+            4. Se tudo estiver ok, aprove o PR
+            
+            ---
+            *Este PR foi criado automaticamente pelo workflow de atualização de dependências*
+          branch: update-dependencies-frontend
+          delete-branch: true
+          labels: |
+            dependencies
+            frontend
+            automated
+
