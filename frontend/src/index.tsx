@@ -34,18 +34,58 @@ root.render(
   </React.StrictMode>
 );
 
-// Service Worker desabilitado temporariamente por causa de conflitos
-// Comentar para reativar após resolver os problemas de CORS/API
-/*
-if ('serviceWorker' in navigator && process.env.NODE_ENV === 'production') {
+// Service Worker com estratégia Network First para evitar cache antigo
+if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/service-worker.js')
-      .then((registration) => {
-        console.log('Service Worker registrado com sucesso:', registration.scope);
-      })
-      .catch((error) => {
-        console.log('Falha ao registrar Service Worker:', error);
+    // Primeiro, desregistra todos os service workers antigos
+    navigator.serviceWorker.getRegistrations().then((registrations) => {
+      registrations.forEach((registration) => {
+        registration.unregister();
+        console.log('[SW] Service Worker antigo desregistrado');
       });
+      
+      // Limpa todos os caches antigos
+      if ('caches' in window) {
+        caches.keys().then((cacheNames) => {
+          cacheNames.forEach((cacheName) => {
+            if (cacheName.startsWith('hora-extra-')) {
+              caches.delete(cacheName);
+              console.log('[SW] Cache antigo removido:', cacheName);
+            }
+          });
+        });
+      }
+      
+      // Aguarda um pouco e registra o novo service worker
+      setTimeout(() => {
+        navigator.serviceWorker.register('/service-worker.js', {
+          updateViaCache: 'none' // Sempre busca versão mais recente do service worker
+        })
+          .then((registration) => {
+            console.log('[SW] Service Worker registrado com sucesso:', registration.scope);
+            
+            // Verifica atualizações periodicamente
+            setInterval(() => {
+              registration.update();
+            }, 60000); // A cada 1 minuto
+            
+            // Escuta atualizações do service worker
+            registration.addEventListener('updatefound', () => {
+              const newWorker = registration.installing;
+              if (newWorker) {
+                newWorker.addEventListener('statechange', () => {
+                  if (newWorker.state === 'activated') {
+                    console.log('[SW] Nova versão ativada, recarregando página...');
+                    window.location.reload();
+                  }
+                });
+              }
+            });
+          })
+          .catch((error) => {
+            console.error('[SW] Falha ao registrar Service Worker:', error);
+          });
+      }, 1000);
+    });
   });
 }
-*/

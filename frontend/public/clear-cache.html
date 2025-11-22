@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Limpar Cache - Hora Extra</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 600px;
+      margin: 50px auto;
+      padding: 20px;
+      background: #f5f5f5;
+    }
+    .container {
+      background: white;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    button {
+      background: #3b82f6;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+      margin: 10px 5px;
+    }
+    button:hover {
+      background: #2563eb;
+    }
+    .status {
+      margin-top: 20px;
+      padding: 15px;
+      border-radius: 6px;
+      background: #f0f0f0;
+    }
+    .success {
+      background: #d4edda;
+      color: #155724;
+    }
+    .error {
+      background: #f8d7da;
+      color: #721c24;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🧹 Limpar Cache - Hora Extra</h1>
+    <p>Use esta página para limpar o cache e service workers antigos que podem estar causando problemas de design.</p>
+    
+    <button onclick="clearAll()">Limpar Tudo</button>
+    <button onclick="clearServiceWorkers()">Limpar Service Workers</button>
+    <button onclick="clearCache()">Limpar Cache</button>
+    <button onclick="reload()">Recarregar Página</button>
+    
+    <div id="status" class="status" style="display: none;"></div>
+  </div>
+
+  <script>
+    function showStatus(message, type = 'success') {
+      const status = document.getElementById('status');
+      status.textContent = message;
+      status.className = `status ${type}`;
+      status.style.display = 'block';
+    }
+
+    async function clearServiceWorkers() {
+      try {
+        if ('serviceWorker' in navigator) {
+          const registrations = await navigator.serviceWorker.getRegistrations();
+          for (let registration of registrations) {
+            await registration.unregister();
+          }
+          showStatus(`✅ ${registrations.length} Service Worker(s) desregistrado(s)!`);
+        } else {
+          showStatus('⚠️ Service Workers não são suportados neste navegador.', 'error');
+        }
+      } catch (error) {
+        showStatus(`❌ Erro ao limpar Service Workers: ${error.message}`, 'error');
+      }
+    }
+
+    async function clearCache() {
+      try {
+        if ('caches' in window) {
+          const cacheNames = await caches.keys();
+          for (let cacheName of cacheNames) {
+            await caches.delete(cacheName);
+          }
+          showStatus(`✅ ${cacheNames.length} cache(s) removido(s)!`);
+        } else {
+          showStatus('⚠️ Cache API não é suportada neste navegador.', 'error');
+        }
+      } catch (error) {
+        showStatus(`❌ Erro ao limpar cache: ${error.message}`, 'error');
+      }
+    }
+
+    async function clearAll() {
+      await clearServiceWorkers();
+      await clearCache();
+      showStatus('✅ Tudo limpo! Recarregue a página para aplicar as mudanças.', 'success');
+    }
+
+    function reload() {
+      window.location.reload(true);
+    }
+
+    // Limpa automaticamente ao carregar a página
+    window.addEventListener('load', () => {
+      clearAll();
+    });
+  </script>
+</body>
+</html>
+
