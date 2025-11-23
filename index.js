@@ -53,11 +53,21 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 // Rota de health check para manter o Render acordado
+// IMPORTANTE: Esta rota deve vir ANTES de qualquer middleware que possa interceptá-la
 app.get("/health", (req, res) => {
   res.status(200).json({ 
     status: "ok", 
     timestamp: new Date().toISOString(),
-    uptime: process.uptime()
+    uptime: process.uptime(),
+    service: "hora-extra"
+  });
+});
+
+// Rota alternativa de ping (caso /health não funcione)
+app.get("/ping", (req, res) => {
+  res.status(200).json({ 
+    status: "pong", 
+    timestamp: new Date().toISOString()
   });
 });
 
